@@ -6,6 +6,13 @@ public class NumberSchema extends BaseSchema<Integer> {
     private Integer rangeMin;
     private Integer rangeMax;
 
+    public NumberSchema() {
+        addCheck(value -> !required || value != null);
+        addCheck(value -> value == null || !positive || value > 0);
+        addCheck(value -> value == null || rangeMin == null || value >= rangeMin);
+        addCheck(value -> value == null || rangeMax == null || value <= rangeMax);
+    }
+
     public NumberSchema required() {
         required = true;
         return this;
@@ -22,24 +29,4 @@ public class NumberSchema extends BaseSchema<Integer> {
         return this;
     }
 
-    @Override
-    public boolean isValid(Integer value) {
-        if (value == null) {
-            return !required;
-        }
-
-        if (positive && value <= 0) {
-            return false;
-        }
-
-        if (rangeMin != null && value < rangeMin) {
-            return false;
-        }
-
-        if (rangeMax != null && value > rangeMax) {
-            return false;
-        }
-
-        return true;
-    }
 }

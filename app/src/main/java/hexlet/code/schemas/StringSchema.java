@@ -5,6 +5,12 @@ public class StringSchema extends BaseSchema<String> {
     private Integer minLength;
     private String contains;
 
+    public StringSchema() {
+        addCheck(value -> !required || value != null && !value.isEmpty());
+        addCheck(value -> value == null || minLength == null || value.length() >= minLength);
+        addCheck(value -> value == null || contains == null || value.contains(contains));
+    }
+
     public StringSchema required() {
         required = true;
         return this;
@@ -20,20 +26,4 @@ public class StringSchema extends BaseSchema<String> {
         return this;
     }
 
-    @Override
-    public boolean isValid(String value) {
-        if (value == null || value.isEmpty()) {
-            return !required;
-        }
-
-        if (minLength != null && value.length() < minLength) {
-            return false;
-        }
-
-        if (contains != null && !value.contains(contains)) {
-            return false;
-        }
-
-        return true;
-    }
 }
