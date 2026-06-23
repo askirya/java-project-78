@@ -2,7 +2,7 @@ plugins {
     java
     jacoco
     checkstyle
-    id("org.sonarqube") version "6.0.1.5171"
+    id("org.sonarqube") version "7.3.1.8318"
 }
 
 group = "hexlet.code"
