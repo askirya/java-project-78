@@ -1,26 +1,17 @@
 package hexlet.code.schemas;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public abstract class BaseSchema<T> {
-    private final List<Predicate<T>> checks = new ArrayList<>();
+    private final Map<String, Predicate<T>> checks = new HashMap<>();
 
-    protected final void addCheck(Predicate<T> check) {
-        checks.add(check);
+    protected final void addCheck(String name, Predicate<T> check) {
+        checks.put(name, check);
     }
 
     public final boolean isValid(T value) {
-        return checks.stream().allMatch(check -> check.test(value));
-    }
-
-    @SuppressWarnings("unchecked")
-    public final boolean isValidObject(Object value) {
-        try {
-            return isValid((T) value);
-        } catch (ClassCastException exception) {
-            return false;
-        }
+        return checks.values().stream().allMatch(check -> check.test(value));
     }
 }

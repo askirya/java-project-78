@@ -26,3 +26,10 @@ jobs:
       - name: Build and test
         working-directory: app
         run: ./gradlew build
+
+      - name: Analyze with SonarCloud
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        working-directory: app
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonar

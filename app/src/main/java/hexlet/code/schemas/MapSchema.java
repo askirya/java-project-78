@@ -2,42 +2,33 @@ package hexlet.code.schemas;
 
 import java.util.Map;
 
-public class MapSchema extends BaseSchema<Map<?, ?>> {
-    private boolean required;
-    private Integer sizeof;
-    private Map<String, ? extends BaseSchema<?>> shape;
-
-    public MapSchema() {
-        addCheck(value -> !required || value != null);
-        addCheck(value -> value == null || sizeof == null || value.size() == sizeof);
-        addCheck(this::isShapeValid);
-    }
-
+public final class MapSchema extends BaseSchema<Map<?, ?>> {
     public MapSchema required() {
-        required = true;
+        addCheck("required", value -> value != null);
         return this;
     }
 
     public MapSchema sizeof(int size) {
-        sizeof = size;
+        addCheck("sizeof", value -> value == null || value.size() == size);
         return this;
     }
 
     public MapSchema shape(Map<String, ? extends BaseSchema<?>> schemas) {
-        shape = schemas;
+        addCheck("shape", value -> value == null || isShapeValid(value, schemas));
         return this;
     }
 
-    private boolean isShapeValid(Map<?, ?> value) {
-        if (value == null || shape == null) {
-            return true;
-        }
-
-        for (Map.Entry<String, ? extends BaseSchema<?>> entry : shape.entrySet()) {
-            if (!entry.getValue().isValidObject(value.get(entry.getKey()))) {
+    private boolean isShapeValid(Map<?, ?> value, Map<String, ? extends BaseSchema<?>> schemas) {
+        for (var entry : schemas.entrySet()) {
+            if (!isValidBySchema(entry.getValue(), value.get(entry.getKey()))) {
                 return false;
             }
         }
         return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> boolean isValidBySchema(BaseSchema<T> schema, Object value) {
+        return schema.isValid((T) value);
     }
 }
